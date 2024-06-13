@@ -1,0 +1,57 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-nav {
+  background-color: #282c34;
+  padding: 10px;
+}
+
+.App-nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+
+.App-nav li {
+  margin: 0 10px;
+}
+
+.App-nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.App-nav a:hover {
+  text-decoration: underline;
+}
+
+.connect-button {
+  font-size: 16px;
+  padding: 10px 20px;
+  margin-left: 20px;
+  cursor: pointer;
+  background-color: #61dafb;
+  border: none;
+  border-radius: 5px;
+  color: #282c34;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.connect-button:hover {
+  background-color: #21a1f1;
+  color: white;
+}
