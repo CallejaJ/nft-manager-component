@@ -12,7 +12,7 @@ export default function MintNFT({ account }) {
         const initContract = async () => {
             if (window.ethereum && account) {
                 try {
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const provider = new ethers.BrowserProvider(window.ethereum);
                     const signer = provider.getSigner();
                     const tempContract = new ethers.Contract(contractAddress, abi, signer);
                     setContract(tempContract);
@@ -56,10 +56,12 @@ export default function MintNFT({ account }) {
         <div className="MintNFT">
             <header className="MintNFT-header">
                 {account ? (
-                    <div>
-                        <img src={getRandomImage()} alt="NFT" className="nft-image" />
+                    <>
+                        <div>
+                            <img src={getRandomImage()} alt="NFT" className="nft-image" />
+                        </div>
                         <button onClick={mintNFT} className="mint-button">Mint NFT</button>
-                    </div>
+                    </>
                 ) : (
                     <p>Please connect your wallet to mint an NFT.</p>
                 )}
