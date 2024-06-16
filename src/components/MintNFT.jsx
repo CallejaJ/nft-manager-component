@@ -10,51 +10,55 @@ export default function MintNFT({ account }) {
 
     useEffect(() => {
         const initContract = async () => {
-            if (window.ethereum && account) {
-                try {
-                    console.log('Initializing provider...');
-                    const provider = new ethers.BrowserProvider(window.ethereum);
-                    await provider.send("eth_requestAccounts", []);
-                    const signer = await provider.getSigner();
-                    console.log('Signer:', signer);
-                    const tempContract = new ethers.Contract(contractAddress, abi, signer);
-                    setContract(tempContract);
-                    console.log('Contract set:', tempContract);
-                } catch (error) {
-                    console.error('Error creating contract instance:', error);
-                }
-            } else {
-                if (!window.ethereum) {
-                    console.error('Ethereum object not found');
-                }
-                if (!account) {
-                    console.error('Account not found');
-                }
+            if (!window.ethereum) {
+                console.error('Ethereum object not found');
+                alert("Please install MetaMask");
+                return;
+            }
+            if (!account) {
+                console.error('Account not found');
+                return;
+            }
+            try {
+                console.log('Initializing provider...');
+                const provider = new ethers.BrowserProvider(window.ethereum);
+                const signer = await provider.getSigner();
+                console.log('Signer:', signer);
+                const tempContract = new ethers.Contract(contractAddress, abi, signer);
+                setContract(tempContract);
+                console.log('Contract set:', tempContract);
+            } catch (error) {
+                console.error('Error creating contract instance:', error);
             }
         };
 
-        initContract();
+        if (account) {
+            initContract();
+        }
     }, [account]);
-
 
     const getRandomImage = () => {
         return `https://picsum.photos/200/300?random=${Math.floor(Math.random() * 1000)}`;
     };
 
     const mintNFT = async () => {
-        if (contract && account) {
-            try {
-                console.log('Attempting to mint NFT...');
-                const tx = await contract.mint(account);
-                console.log('Transaction:', tx);
-                await tx.wait();
-                alert("NFT Minted!");
-            } catch (error) {
-                console.error("Error minting NFT", error);
-                alert(`Error minting NFT: ${error.message}`);
-            }
-        } else {
-            alert("Contract not initialized or account not connected.");
+        if (!contract) {
+            alert("Contract not initialized.");
+            return;
+        }
+        if (!account) {
+            alert("Account not connected.");
+            return;
+        }
+        try {
+            console.log('Attempting to mint NFT...');
+            const tx = await contract.mint(account);
+            console.log('Transaction:', tx);
+            await tx.wait();
+            alert("NFT Minted!");
+        } catch (error) {
+            console.error("Error minting NFT", error);
+            alert(`Error minting NFT: ${error.message}`);
         }
     };
 

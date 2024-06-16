@@ -12,16 +12,30 @@ export default function App() {
   const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
-    const checkConnection = async () => {
+    const initializeProvider = async () => {
       if (window.ethereum) {
-        console.log("Ethereum object found");
         try {
           const provider = new ethers.BrowserProvider(window.ethereum);
           setProvider(provider);
+        } catch (error) {
+          console.error("Error initializing provider", error);
+        }
+      } else {
+        console.error("window.ethereum is not defined");
+        alert("Please install MetaMask");
+      }
+    };
+
+    initializeProvider();
+  }, []);
+
+  useEffect(() => {
+    const checkConnection = async () => {
+      if (provider) {
+        try {
           const accounts = await provider.listAccounts();
           if (accounts.length > 0) {
-            const { address } = accounts[0];
-            setAccount(address);
+            setAccount(accounts[0].address || accounts[0]); // Asegurar que account sea una cadena
             const network = await provider.getNetwork();
             setNetwork(network);
           } else {
@@ -30,13 +44,35 @@ export default function App() {
         } catch (error) {
           console.error("Error checking connection", error);
         }
-      } else {
-        console.error("window.ethereum is not defined");
-        alert("Please install MetaMask");
       }
     };
+
     checkConnection();
-  }, []);
+
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length > 0) {
+          setAccount(accounts[0].address || accounts[0]); // Asegurar que account sea una cadena
+        } else {
+          setAccount(null);
+        }
+      });
+
+      window.ethereum.on('chainChanged', async () => {
+        if (provider) {
+          const network = await provider.getNetwork();
+          setNetwork(network);
+        }
+      });
+    }
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', () => { });
+        window.ethereum.removeListener('chainChanged', () => { });
+      }
+    };
+  }, [provider]);
 
   const connectWallet = async () => {
     if (isConnecting) return;
@@ -44,11 +80,10 @@ export default function App() {
     if (window.ethereum) {
       try {
         const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        const network = await provider.getNetwork();
         if (accounts.length > 0) {
-          const { address } = accounts[0];
-          setAccount(address);
+          setAccount(accounts[0].address || accounts[0]); // Asegurar que account sea una cadena
         }
+        const network = await provider.getNetwork();
         setNetwork(network);
       } catch (err) {
         console.error("Error connecting to wallet:", err);
@@ -123,9 +158,10 @@ export default function App() {
         </nav>
         <Routes>
           <Route path="/" element={<MintNFT account={account} />} />
-          <Route path="/view-nfts" element={<ViewNFTs />} />
+          <Route path="/view-nfts" element={<ViewNFTs account={account} />} />
         </Routes>
       </div>
     </Router>
   );
 }
+
