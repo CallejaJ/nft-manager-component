@@ -12,8 +12,11 @@ export default function MintNFT({ account }) {
         const initContract = async () => {
             if (window.ethereum && account) {
                 try {
+                    console.log('Initializing provider...');
                     const provider = new ethers.BrowserProvider(window.ethereum);
-                    const signer = provider.getSigner();
+                    await provider.send("eth_requestAccounts", []);
+                    const signer = await provider.getSigner();
+                    console.log('Signer:', signer);
                     const tempContract = new ethers.Contract(contractAddress, abi, signer);
                     setContract(tempContract);
                     console.log('Contract set:', tempContract);
@@ -33,6 +36,7 @@ export default function MintNFT({ account }) {
         initContract();
     }, [account]);
 
+
     const getRandomImage = () => {
         return `https://picsum.photos/200/300?random=${Math.floor(Math.random() * 1000)}`;
     };
@@ -40,7 +44,9 @@ export default function MintNFT({ account }) {
     const mintNFT = async () => {
         if (contract && account) {
             try {
+                console.log('Attempting to mint NFT...');
                 const tx = await contract.mint(account);
+                console.log('Transaction:', tx);
                 await tx.wait();
                 alert("NFT Minted!");
             } catch (error) {

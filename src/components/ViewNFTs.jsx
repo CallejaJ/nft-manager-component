@@ -13,8 +13,11 @@ export default function ViewNFTs() {
         const initContract = async () => {
             if (window.ethereum) {
                 try {
+                    console.log('Initializing provider...');
                     const provider = new ethers.BrowserProvider(window.ethereum);
-                    const signer = provider.getSigner();
+                    await provider.send("eth_requestAccounts", []);
+                    const signer = await provider.getSigner();
+                    console.log('Signer:', signer);
                     const tempContract = new ethers.Contract(contractAddress, abi, signer);
                     setContract(tempContract);
                     console.log('Contract set:', tempContract);
@@ -34,10 +37,13 @@ export default function ViewNFTs() {
             if (contract) {
                 try {
                     const totalSupply = await contract.totalSupply();
+                    console.log('Total Supply:', totalSupply.toString());
                     const nftsArray = [];
                     for (let i = 0; i < totalSupply; i++) {
-                        const tokenURI = await contract.tokenURI(i);
-                        nftsArray.push({ id: i, uri: tokenURI });
+                        const tokenId = await contract.tokenByIndex(i);
+                        const tokenURI = await contract.tokenURI(tokenId);
+                        console.log('Token URI:', tokenURI);
+                        nftsArray.push({ id: tokenId, uri: tokenURI });
                     }
                     setNfts(nftsArray);
                 } catch (error) {
@@ -55,9 +61,9 @@ export default function ViewNFTs() {
                 <h1>Minted NFTs</h1>
                 <div className="nft-list">
                     {nfts.map((nft) => (
-                        <div key={nft.id} className="nft-item">
-                            <img src={nft.uri} alt={`NFT ${nft.id}`} />
-                            <p>ID: {nft.id}</p>
+                        <div key={nft.id.toString()} className="nft-item">
+                            <img src={nft.uri} alt={`NFT ${nft.id.toString()}`} />
+                            <p>ID: {nft.id.toString()}</p>
                         </div>
                     ))}
                 </div>
