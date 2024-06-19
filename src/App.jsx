@@ -10,6 +10,8 @@ export default function App() {
   const [network, setNetwork] = useState(null);
   const [provider, setProvider] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [mintedNFTs, setMintedNFTs] = useState([]);
+
 
   useEffect(() => {
     const initializeProvider = async () => {
@@ -96,6 +98,10 @@ export default function App() {
     }
   };
 
+  const addMintedNFT = (nft) => {
+    setMintedNFTs([...mintedNFTs, nft]);
+  };
+
   const switchToSepolia = async () => {
     if (isConnecting) return;
     setIsConnecting(true);
@@ -157,8 +163,8 @@ export default function App() {
           </button>
         </nav>
         <Routes>
-          <Route path="/" element={<MintNFT account={account} />} />
-          <Route path="/view-nfts" element={<ViewNFTs account={account} />} />
+          <Route path="/" element={<MintNFT account={account} addMintedNFT={addMintedNFT} />} />
+          <Route path="/view-nfts" element={<ViewNFTs account={account} mintedNFTs={mintedNFTs} />} />
         </Routes>
       </div>
     </Router>

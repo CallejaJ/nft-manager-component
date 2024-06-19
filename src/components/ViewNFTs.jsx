@@ -3,70 +3,107 @@ import { ethers } from "ethers";
 import "../CSS/ViewNFT.css";
 import abi from "../abis/contractABI.json";
 
-const contractAddress = "0x8E8382DE55fd90552DFf74C7Ea2D5FBFe2A5bE26";
+const contractAddress = "0xC01873082F911F57d8aC20dE1B7C82E7E0e518A9";
 
-export default function ViewNFTs() {
+export default function ViewNFTs({ account, mintedNFTs = [] }) {
     const [nfts, setNfts] = useState([]);
     const [contract, setContract] = useState(null);
+    const [provider, setProvider] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const initContract = async () => {
-            if (window.ethereum) {
-                try {
-                    console.log('Initializing provider...');
-                    const provider = new ethers.BrowserProvider(window.ethereum);
-                    await provider.send("eth_requestAccounts", []);
-                    const signer = await provider.getSigner();
-                    console.log('Signer:', signer);
-                    const tempContract = new ethers.Contract(contractAddress, abi, signer);
-                    setContract(tempContract);
-                    console.log('Contract set:', tempContract);
-                } catch (error) {
-                    console.error('Error creating contract instance:', error);
-                }
-            } else {
-                alert('Please install MetaMask');
+            if (!window.ethereum) {
+                console.error('Ethereum object not found');
+                alert("Please install MetaMask");
+                return;
+            }
+            if (!account) {
+                console.error('Account not found');
+                return;
+            }
+            try {
+                console.log('Initializing provider...');
+                const provider = new ethers.BrowserProvider(window.ethereum);
+                setProvider(provider);
+                const signer = await provider.getSigner();
+                console.log('Signer:', signer);
+                const tempContract = new ethers.Contract(contractAddress, abi, signer);
+                setContract(tempContract);
+                console.log('Contract set:', tempContract);
+            } catch (error) {
+                console.error('Error creating contract instance:', error);
             }
         };
 
-        initContract();
-    }, []);
+        if (account) {
+            initContract();
+        }
+    }, [account]);
 
     useEffect(() => {
         const fetchNFTs = async () => {
-            if (contract) {
+            if (contract && account) {
                 try {
-                    const totalSupply = await contract.totalSupply();
-                    console.log('Total Supply:', totalSupply.toString());
-                    const nftsArray = [];
-                    for (let i = 0; i < totalSupply; i++) {
-                        const tokenId = await contract.tokenByIndex(i);
-                        const tokenURI = await contract.tokenURI(tokenId);
-                        console.log('Token URI:', tokenURI);
-                        nftsArray.push({ id: tokenId, uri: tokenURI });
+                    console.log('Fetching balance...');
+                    const balance = await contract.balanceOf(account);
+                    console.log(`Balance: ${balance.toString()}`);
+                    const nftData = [];
+                    for (let i = 0; i < balance; i++) {
+                        try {
+                            const tokenId = await contract.tokenOfOwnerByIndex(account, i);
+                            console.log(`Token ID: ${tokenId.toString()}`);
+
+                            // Buscar la imagen en mintedNFTs
+                            const mintedNFT = mintedNFTs.find(nft => nft.tokenId === tokenId.toString());
+
+                            nftData.push({
+                                tokenId: tokenId.toString(),
+                                image: mintedNFT ? mintedNFT.image : "https://via.placeholder.com/150"
+                            });
+                        } catch (innerError) {
+                            console.error(`Error fetching token data for tokenId ${i}:`, innerError);
+                        }
                     }
-                    setNfts(nftsArray);
+                    setNfts(nftData);
                 } catch (error) {
-                    console.error('Error fetching NFTs:', error);
+                    console.error("Error fetching NFTs", error);
+                    setError(`Error fetching NFTs: ${error.message}`);
                 }
             }
         };
 
-        fetchNFTs();
-    }, [contract]);
+        if (contract && account) {
+            fetchNFTs();
+        }
+    }, [contract, account, provider, mintedNFTs]);
+
+    if (error) {
+        return <div>Error fetching NFTs: {error}</div>;
+    }
 
     return (
         <div className="ViewNFTs">
             <header className="ViewNFTs-header">
-                <h1>Minted NFTs</h1>
-                <div className="nft-list">
-                    {nfts.map((nft) => (
-                        <div key={nft.id.toString()} className="nft-item">
-                            <img src={nft.uri} alt={`NFT ${nft.id.toString()}`} />
-                            <p>ID: {nft.id.toString()}</p>
+                {account ? (
+                    <>
+                        <h2>Your NFTs</h2>
+                        <div className="nft-grid">
+                            {nfts.length > 0 ? (
+                                nfts.map((nft, index) => (
+                                    <div key={index} className="nft-card">
+                                        <img src={nft.image} alt={`NFT ${nft.tokenId}`} className="nft-image" />
+                                        <p>Token ID: {nft.tokenId}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No NFTs found.</p>
+                            )}
                         </div>
-                    ))}
-                </div>
+                    </>
+                ) : (
+                    <p>Please connect your wallet to view your NFTs.</p>
+                )}
             </header>
         </div>
     );
