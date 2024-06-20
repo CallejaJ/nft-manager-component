@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import "../CSS/ViewNFT.css";
 import abi from "../abis/contractABI.json";
 
-const contractAddress = "0xC01873082F911F57d8aC20dE1B7C82E7E0e518A9";
+const contractAddress = "0xe1b9c0851A09DC26Ad6CadC18A8e5c82cDd30e80";
 
 export default function ViewNFTs({ account, mintedNFTs = [] }) {
     const [nfts, setNfts] = useState([]);

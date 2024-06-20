@@ -3,15 +3,10 @@ import { ethers } from "ethers";
 import "../CSS/MintNFT.css";
 import abi from "../abis/contractABI.json";
 
-const contractAddress = "0xC01873082F911F57d8aC20dE1B7C82E7E0e518A9";
+const contractAddress = "0xe1b9c0851A09DC26Ad6CadC18A8e5c82cDd30e80";
 
-const getRandomImage = () => {
-    return `https://picsum.photos/200/300?random=${Math.floor(Math.random() * 1000)}`;
-};
-
-export default function MintNFT({ account, addMintedNFT }) {
+export default function MintNFT({ account }) {
     const [contract, setContract] = useState(null);
-    const [randomImage] = useState(getRandomImage());
 
     useEffect(() => {
         const initContract = async () => {
@@ -42,6 +37,10 @@ export default function MintNFT({ account, addMintedNFT }) {
         }
     }, [account]);
 
+    const getRandomImage = () => {
+        return `https://picsum.photos/200/300?random=${Math.floor(Math.random() * 1000)}`;
+    };
+
     const mintNFT = async () => {
         if (!contract) {
             alert("Contract not initialized.");
@@ -56,24 +55,10 @@ export default function MintNFT({ account, addMintedNFT }) {
             const tx = await contract.mint(account);
             console.log('Transaction:', tx);
             await tx.wait();
-
-            // Obtener el tokenId
-            const tokenId = await contract.tokenCounter(); // Supongamos que `tokenCounter` devuelve el último tokenId mintado
-
-            // Agregar el NFT acuñado a la lista en App
-            addMintedNFT({
-                tokenId: tokenId.toString(),
-                image: randomImage
-            });
-
             alert("NFT Minted!");
         } catch (error) {
-            if (error.reason === "Each address may only mint one NFT") {
-                alert("Error minting NFT: Each address may only mint one NFT.");
-            } else {
-                console.error("Error minting NFT", error);
-                alert(`Error minting NFT: ${error.message}`);
-            }
+            console.error("Error minting NFT", error);
+            alert(`Error minting NFT: ${error.message}`);
         }
     };
 
@@ -83,7 +68,7 @@ export default function MintNFT({ account, addMintedNFT }) {
                 {account ? (
                     <>
                         <div>
-                            <img src={randomImage} alt="NFT" className="nft-image" />
+                            <img src={getRandomImage()} alt="NFT" className="nft-image" />
                         </div>
                         <button onClick={mintNFT} className="mint-button">Mint NFT</button>
                     </>
