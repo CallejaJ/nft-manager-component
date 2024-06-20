@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "../CSS/ViewNFT.css";
 import abi from "../abis/contractABI.json";
+import nfticon from "../images/nft-icon-non-fungible-token-vector.jpg"
 
 const contractAddress = "0xe1b9c0851A09DC26Ad6CadC18A8e5c82cDd30e80";
 
@@ -54,12 +55,8 @@ export default function ViewNFTs({ account, mintedNFTs = [] }) {
                             const tokenId = await contract.tokenOfOwnerByIndex(account, i);
                             console.log(`Token ID: ${tokenId.toString()}`);
 
-                            // Buscar la imagen en mintedNFTs
-                            const mintedNFT = mintedNFTs.find(nft => nft.tokenId === tokenId.toString());
-
                             nftData.push({
                                 tokenId: tokenId.toString(),
-                                image: mintedNFT ? mintedNFT.image : "https://via.placeholder.com/150"
                             });
                         } catch (innerError) {
                             console.error(`Error fetching token data for tokenId ${i}:`, innerError);
@@ -92,8 +89,8 @@ export default function ViewNFTs({ account, mintedNFTs = [] }) {
                             {nfts.length > 0 ? (
                                 nfts.map((nft, index) => (
                                     <div key={index} className="nft-card">
-                                        <img src={nft.image} alt={`NFT ${nft.tokenId}`} className="nft-image" />
-                                        <p>Token ID: {nft.tokenId}</p>
+                                        <img src={nfticon} alt={`NFT ${nft.tokenId}`} className="nft-image-small" />
+                                        <p className="token-id">Token ID: {nft.tokenId}</p>
                                     </div>
                                 ))
                             ) : (
