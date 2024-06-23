@@ -5,8 +5,11 @@ import abi from "../abis/contractABI.json";
 
 const contractAddress = "0xe1b9c0851A09DC26Ad6CadC18A8e5c82cDd30e80";
 
-export default function MintNFT({ account }) {
+export default function MintNFT({ account, saveImageUrl }) {
     const [contract, setContract] = useState(null);
+
+    const randomNumber = Math.floor(Math.random() * 1000)
+    const imageURL = `https://picsum.photos/200/300?random=${randomNumber}`;
 
     useEffect(() => {
         const initContract = async () => {
@@ -15,10 +18,12 @@ export default function MintNFT({ account }) {
                 alert("Please install MetaMask");
                 return;
             }
+
             if (!account) {
                 console.error('Account not found');
                 return;
             }
+
             try {
                 console.log('Initializing provider...');
                 const provider = new ethers.BrowserProvider(window.ethereum);
@@ -37,30 +42,35 @@ export default function MintNFT({ account }) {
         }
     }, [account]);
 
-    const getRandomImage = () => {
-        return `https://picsum.photos/200/300?random=${Math.floor(Math.random() * 1000)}`;
-    };
 
-    const mintNFT = async () => {
+
+    const handleMintNftClick = async () => {
         if (!contract) {
             alert("Contract not initialized.");
             return;
         }
+
         if (!account) {
             alert("Account not connected.");
             return;
         }
+
+        mintNft();
+    };
+
+    const mintNft = async () => {
         try {
             console.log('Attempting to mint NFT...');
             const tx = await contract.mint(account);
             console.log('Transaction:', tx);
             await tx.wait();
             alert("NFT Minted!");
+            saveImageUrl(imageURL);
         } catch (error) {
             console.error("Error minting NFT", error);
             alert(`Error minting NFT: ${error.message}`);
         }
-    };
+    }
 
     return (
         <div className="MintNFT">
@@ -68,9 +78,9 @@ export default function MintNFT({ account }) {
                 {account ? (
                     <>
                         <div>
-                            <img src={getRandomImage()} alt="NFT" className="nft-image" />
+                            <img src={imageURL} alt="NFT" className="nft-image" />
                         </div>
-                        <button onClick={mintNFT} className="mint-button">Mint NFT</button>
+                        <button onClick={handleMintNftClick} className="mint-button">Mint NFT</button>
                     </>
                 ) : (
                     <p>Please connect your wallet to mint an NFT.</p>
