@@ -40,18 +40,24 @@
 }
 
 .connect-button {
-  font-size: 16px;
+  background-color: #007bff;
+    color: white;
+    border: none;
   padding: 10px 20px;
-  margin-left: 20px;
+  font-size: 16px;
   cursor: pointer;
-  background-color: #61dafb;
-  border: none;
   border-radius: 5px;
-  color: #282c34;
-  transition: background-color 0.3s, color 0.3s;
+  transition: all 0.3s ease;
+    box-shadow: 2px 5px #0056b3;
 }
 
-.connect-button:hover {
-  background-color: #21a1f1;
-  color: white;
+.connect-button:active {
+  background-color: #0056b3;
+  box-shadow: 2px 2px #0056b3;
+  transform: translateY(2px);
+}
+
+.connect-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
