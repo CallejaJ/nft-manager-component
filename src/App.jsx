@@ -10,8 +10,7 @@ export default function App() {
   const [network, setNetwork] = useState(null);
   const [provider, setProvider] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [mintedNFTs, setMintedNFTs] = useState([]);
-
+  const [imageURLs, setImageURLs] = useState([])
 
   useEffect(() => {
     const initializeProvider = async () => {
@@ -98,10 +97,6 @@ export default function App() {
     }
   };
 
-  const addMintedNFT = (nft) => {
-    setMintedNFTs([...mintedNFTs, nft]);
-  };
-
   const switchToSepolia = async () => {
     if (isConnecting) return;
     setIsConnecting(true);
@@ -146,6 +141,12 @@ export default function App() {
     }
   };
 
+  const saveImageUrl = (imageURL) => {
+    const updateImageUrls = [...imageURLs, imageURL];
+
+    setImageURLs(updateImageUrls)
+  }
+
   return (
     <Router>
       <div className="App">
@@ -159,12 +160,12 @@ export default function App() {
             </li>
           </ul>
           <button onClick={handleConnectOrSwitch} className="connect-button" disabled={isConnecting}>
-            {account ? `Connected: ${account}` : "Connect Wallet"}
+            {account ? `Connected to: ${account}` : "Connect Wallet"}
           </button>
         </nav>
         <Routes>
-          <Route path="/" element={<MintNFT account={account} addMintedNFT={addMintedNFT} />} />
-          <Route path="/view-nfts" element={<ViewNFTs account={account} mintedNFTs={mintedNFTs} />} />
+          <Route path="/" element={<MintNFT account={account} saveImageUrl={saveImageUrl} />} />
+          <Route path="/view-nfts" element={<ViewNFTs account={account} imageURLs={imageURLs} />} />
         </Routes>
       </div>
     </Router>
