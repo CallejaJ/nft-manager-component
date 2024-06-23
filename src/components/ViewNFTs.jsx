@@ -4,7 +4,7 @@ import "../CSS/ViewNFT.css";
 import abi from "../abis/contractABI.json";
 import nfticon from "../images/nft-icon-non-fungible-token-vector.jpg"
 
-const contractAddress = "0xe1b9c0851A09DC26Ad6CadC18A8e5c82cDd30e80";
+const contractAddress = "0x6084E11e0617692982A37d42DfF1Fa197CCcc7aF";
 
 export default function ViewNFTs({ account, imageURLs }) {
     const [loading, setLoading] = useState(true);
