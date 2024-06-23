@@ -34,56 +34,72 @@
 .nft-item p {
     color: #61dafb;
 }
-.nft-image-small {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    /* Para asegurarte de que la imagen no se deforma */
-}
 
-
-.nft-image-small {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-}
-
-
-.ViewNFTs-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
 
 .nft-grid {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    width: 100%;
+    width: 50%;
 }
 
 .nft-card {
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: #ffffff;
-    padding: 5px;
+    background-color: #f9f9f9;
+        padding: 10px;
     border-radius: 8px;
-    width: 200px;
-    height: 30px;
-    /* Ajusta este valor según tus necesidades */
+    width: 300px;
+        /* Ajusta este valor según tus necesidades */
 }
 
+.ViewNFTs-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    /* Cambia el color del texto a blanco */
+}
+
+.nft-table {
+    width: 50%;
+    max-width: 600px;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border: 1px solid #007bff;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.5);
+    /* Añadir sombra azul a la tabla */
+}
+
+.nft-table th,
+.nft-table td {
+    border: 1px solid #007bff;
+    text-align: center;
+    color: white;
+    /* Cambia el color del texto a blanco */
+}
+
+.nft-table th {
+    background-color: #007bff;
+}
+
+.nft-table td {
+    background-color: #333;
+}
 .nft-image-small {
-    width: 50px;
+    width: 30px;
     height: 30px;
+        border: 2px solid #007bff;
+            /* Borde del mismo color que el fondo del botón */
+            border-radius: 5px;
     object-fit: cover;
 }
 
 .token-id {
-    margin-left: 10px;
-    font-size: 14px;
-    color: #333;
+    font-size: 10px;
+        color: white;
+        /* Cambia el color del texto a blanco */
 }
